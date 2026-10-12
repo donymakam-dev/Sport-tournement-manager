@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionnaire de Tournois Sportifs — Saint Jérôme</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-box">
+        <span class="brand-badge">Saint Jérôme Douala</span>
+        <h1 class="app-title">Gestionnaire de Tournois Sportifs</h1>
+      </div>
+      <div class="tournament-selector-box">
+        <select id="selectTournament" class="select-tournament">
+          <!-- Populated dynamically -->
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modalTournament')">
+          ➕ Nouveau Tournoi
+        </button>
+        <a id="btnOpenPublic" href="/public" target="_blank" class="btn btn-basket btn-sm">
+          📱 Portail Spectateur (Public)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tournament Info Bar -->
+  <div style="background: #ffffff; border-bottom: 1px solid var(--border); padding: 0.75rem 2rem;">
+    <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <h2 id="displayTournamentName" style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">Chargement...</h2>
+        <span id="displayTournamentSport" class="brand-badge" style="background: #e0f2fe; color: #0369a1;">Discipline</span>
+        <span id="displayTournamentYear" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Édition</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Lien public direct : <code id="publicLinkPreview" style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--primary);">...</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <nav class="tabs-nav">
+    <div class="tabs-container">
+      <button class="tab-btn active" data-tab="tab-standings">
+        🏆 Classement Officiel
+      </button>
+      <button class="tab-btn" data-tab="tab-matches">
+        📅 Rencontres & Feuilles de Match
+      </button>
+      <button class="tab-btn" data-tab="tab-teams">
+        👥 Équipes & Joueurs
+      </button>
+      <button class="tab-btn" data-tab="tab-stats">
+        📊 Meilleurs Marqueurs & MVPs
+      </button>
+      <button class="tab-btn" data-tab="tab-awards">
+        🌟 Joueurs de la Semaine
+      </button>
+      <button class="tab-btn" data-tab="tab-highlights">
+        ⚡ Belles Actions & Vidéos
+      </button>
+      <button class="tab-btn" data-tab="tab-share">
+        🔗 Liens & Partage WhatsApp
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- TAB 1: CLASSEMENT -->
+    <section id="tab-standings" class="tab-pane active">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏆 Classement en Temps Réel</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table standings-table">
+            <thead id="tableHeadStandings">
+              <!-- Rendered dynamically depending on sport -->
+            </thead>
+            <tbody id="tableBodyStandings">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: RENCONTRES -->
+    <section id="tab-matches" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📅 Calendrier des Rencontres & Scores</h2>
+          <button class="btn btn-primary" onclick="openModal('modalMatch')">
+            ➕ Programmer une Rencontre
+          </button>
+        </div>
+        <div class="matches-grid" id="matchesContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: EQUIPES & EFFECTIFS -->
+    <section id="tab-teams" class="tab-pane">
+      <div class="card" style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+          <h2 class="card-title">👥 Effectifs & Compositions d'Équipes</h2>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Les photos des joueurs et logos des équipes sont 100% au choix (avec ou sans photo).
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalTeam')">
+          ➕ Créer une Équipe
+        </button>
+      </div>
+      <div id="teamsContainer">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 4: STATS INDIVIDUELLES & BUTEURS -->
+    <section id="tab-stats" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🎯 Meilleurs Marqueurs / Buteurs & Distinctions MVP</h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          
+          <!-- Scorers -->
+          <div class="table-responsive">
+            <div style="padding: 0.75rem 1rem; background: #f8fafc; font-weight: 800; border-bottom: 1px solid var(--border);">
+              Top Marqueurs / Buteurs
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">Rang</th>
+                  <th>Joueur</th>
+                  <th>Équipe</th>
+                  <th style="text-align: center;">Total</th>
+                </tr>
+              </thead>
+              <tbody id="tableBodyScorers"></tbody>
+            </table>
+          </div>
+
+          <!-- MVPs -->
+          <div class="table-responsive">
+            <div style="padding: 0.75rem 1rem; background: #fef3c7; color: #92400e; font-weight: 800; border-bottom: 1px solid var(--border);">
+              ⭐ Hommes du Match (MVP)
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">Rang</th>
+                  <th>Joueur</th>
+                  <th style="text-align: center;">Trophées</th>
+                </tr>
+              </thead>
+              <tbody id="tableBodyMvps"></tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Extra Stats for Basketball -->
+        <div id="basketExtraStatsContainer" style="display: none; margin-top: 2rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #ea580c; margin-bottom: 1rem;">
+            🏀 Statistiques Spécifiques Basketball (3-Points, Assists, Rebonds)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+            
+            <div class="table-responsive">
+              <div style="padding: 0.6rem 0.85rem; background: #ffedd5; color: #9a3412; font-weight: 800;">
+                Tirs à 3-Points
+              </div>
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Joueur</th><th>Tirs</th></tr></thead>
+                <tbody id="tableBody3pts"></tbody>
+              </table>
+            </div>
+
+            <div class="table-responsive">
+              <div style="padding: 0.6rem 0.85rem; background: #dbeafe; color: #1e40af; font-weight: 800;">
+                Passes Décisives (Assists)
+              </div>
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Joueur</th><th>Passes</th></tr></thead>
+                <tbody id="tableBodyAssists"></tbody>
+              </table>
+            </div>
+
+            <div class="table-responsive">
+              <div style="padding: 0.6rem 0.85rem; background: #dcfce7; color: #166534; font-weight: 800;">
+                Rebonds
+              </div>
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Joueur</th><th>Rebonds</th></tr></thead>
+                <tbody id="tableBodyRebounds"></tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 5: JOUEURS DE LA SEMAINE -->
+    <section id="tab-awards" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🌟 Joueurs de la Semaine & Équipes Types</h2>
+          <button class="btn btn-basket" onclick="openModal('modalAward')">
+            ⭐ Nommer le Joueur de la Semaine
+          </button>
+        </div>
+        <div id="awardsContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: BELLES ACTIONS & HIGHLIGHTS -->
+    <section id="tab-highlights" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">⚡ Belles Actions, Vidéos & Photos</h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Publiez les moments forts des matchs (dunks, lucarnes, arrêts décisifs) avec espace commentaires pour les étudiants.
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="openModalHighlight()">
+            ➕ Publier une Belle Action
+          </button>
+        </div>
+        <div class="highlights-grid" id="highlightsContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: PARTAGE & RESEAUX -->
+    <section id="tab-share" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🔗 Partage & Liens Directs</h2>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Lien Universel pour les spectateurs (Smartphones & PC sur le réseau) :</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="shareLinkInput" class="form-control" readonly>
+            <button class="btn btn-primary" onclick="copyPublicLink()">📋 Copier</button>
+          </div>
+          <small style="color: var(--text-muted); display: block; margin-top: 0.4rem;">
+            Tous les étudiants connectés au même réseau Wi-Fi ou point d'accès peuvent suivre les résultats en direct via ce lien.
+          </small>
+        </div>
+
+        <div class="card" style="background: #f0fdf4; border: 1px solid #bbf7d0; margin-top: 1.5rem;">
+          <h3 style="color: #166534; font-size: 1.05rem; margin-bottom: 0.5rem;">📲 Générateur de Fiche WhatsApp</h3>
+          <p style="font-size: 0.9rem; color: #14532d; margin-bottom: 1rem;">
+            Générez un texte prêt à coller dans les groupes WhatsApp de la promotion (Classement officiel, derniers résultats, Homme du match et lien direct).
+          </p>
+          <button class="btn btn-success" onclick="generateWhatsAppRecap()">
+            📋 Copier le Résumé WhatsApp
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal Tournament -->
+  <div class="modal-overlay" id="modalTournament">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Créer un Tournoi</h3>
+        <button class="modal-close" onclick="closeModal('modalTournament')">&times;</button>
+      </div>
+      <form id="formCreateTournament">
+        <div class="form-group">
+          <label class="form-label">Nom de la Compétition :</label>
+          <input type="text" id="tName" class="form-control" placeholder="ex: Tournoi Inter-Filières 2026" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Discipline :</label>
+            <select id="tSport" class="form-control" required>
+              <option value="basketball">Basketball (2 pts victoire / 1 pt défaite)</option>
+              <option value="football">Football (3 pts victoire / 1 pt nul)</option>
+              <option value="handball">Handball (2 pts victoire / 1 pt nul)</option>
+              <option value="volleyball">Volleyball (Points par sets 3-0, 3-2)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Année / Édition :</label>
+            <input type="text" id="tYear" class="form-control" value="2025-2026" required>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalTournament')">Annuler</button>
+          <button type="submit" class="btn btn-primary">Créer le Tournoi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Team -->
+  <div class="modal-overlay" id="modalTeam">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Ajouter une Équipe</h3>
+        <button class="modal-close" onclick="closeModal('modalTeam')">&times;</button>
+      </div>
+      <form id="formTeam">
+        <div class="form-group">
+          <label class="form-label">Nom de l'équipe :</label>
+          <input type="text" id="teamName" class="form-control" placeholder="ex: Mécatronique Bulls" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Filière / Département :</label>
+            <input type="text" id="teamFiliere" class="form-control" placeholder="ex: Génie Mécatronique">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sigle (3-4 lettres) :</label>
+            <input type="text" id="teamShort" class="form-control" placeholder="ex: MEC" maxlength="4">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Couleur de l'équipe :</label>
+          <input type="color" id="teamColor" value="#dc2626" style="height: 40px; width: 100%; border-radius: 6px; cursor: pointer; border: 1px solid var(--border);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Logo de l'équipe (Optionnel) :</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img id="teamLogoPreview" src="" class="team-logo-small" style="display: none;" alt="Preview">
+            <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              📁 Choisir une image
+              <input type="file" id="teamLogoInput" accept="image/*" style="display: none;">
+            </label>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalTeam')">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer l'Équipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Player -->
+  <div class="modal-overlay" id="modalPlayer">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Ajouter un Joueur</h3>
+        <button class="modal-close" onclick="closeModal('modalPlayer')">&times;</button>
+      </div>
+      <form id="formPlayer">
+        <div class="form-group">
+          <label class="form-label">Équipe :</label>
+          <select id="playerTeamSelect" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom et Prénom :</label>
+          <input type="text" id="playerName" class="form-control" placeholder="ex: KAMGA Jean-Paul" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Numéro de maillot :</label>
+            <input type="number" id="playerNumber" class="form-control" min="0" max="99" placeholder="ex: 23" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Poste de jeu :</label>
+            <input type="text" id="playerPosition" class="form-control" placeholder="ex: Arrière / Meneur / Attaquant">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Photo du Joueur (100% au choix) :</label>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img id="playerPhotoPreview" src="" class="player-avatar" style="width: 52px; height: 52px; display: none;" alt="Preview">
+            <div>
+              <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                📷 Choisir une photo
+                <input type="file" id="playerPhotoInput" accept="image/*" style="display: none;">
+              </label>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Si aucune photo n'est choisie, un avatar épuré avec son numéro sera créé automatiquement.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalPlayer')">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer le Joueur</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Match -->
+  <div class="modal-overlay" id="modalMatch">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Programmer une Rencontre</h3>
+        <button class="modal-close" onclick="closeModal('modalMatch')">&times;</button>
+      </div>
+      <form id="formMatch">
+        <div class="form-group">
+          <label class="form-label">Journée / Phase :</label>
+          <input type="text" id="matchRound" class="form-control" value="Journée 1" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Équipe Domicile :</label>
+            <select id="matchHomeTeam" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Équipe Extérieur :</label>
+            <select id="matchAwayTeam" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Date :</label>
+            <input type="date" id="matchDate" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Heure :</label>
+            <input type="time" id="matchTime" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Terrain / Gymnase :</label>
+          <input type="text" id="matchVenue" class="form-control" placeholder="ex: Gymnase Central Saint Jérôme">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalMatch')">Annuler</button>
+          <button type="submit" class="btn btn-primary">Programmer le Match</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Score & MVP -->
+  <div class="modal-overlay" id="modalScore">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Saisir le Résultat & l'Homme du Match</h3>
+        <button class="modal-close" onclick="closeModal('modalScore')">&times;</button>
+      </div>
+      <form id="formScore">
+        <input type="hidden" id="scoreMatchId">
+        <div style="display: flex; justify-content: space-around; align-items: center; margin: 1.5rem 0;">
+          <div style="text-align: center;">
+            <div id="scoreHomeLabel" style="font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem;">Dom</div>
+            <input type="number" id="scoreHome" class="form-control" min="0" style="width: 90px; font-size: 1.5rem; text-align: center; font-weight: 900;" required>
+          </div>
+          <div style="font-size: 1.5rem; font-weight: 900; color: var(--text-muted);">-</div>
+          <div style="text-align: center;">
+            <div id="scoreAwayLabel" style="font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem;">Ext</div>
+            <input type="number" id="scoreAway" class="form-control" min="0" style="width: 90px; font-size: 1.5rem; text-align: center; font-weight: 900;" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Détail des Sets (Volleyball uniquement) :</label>
+          <input type="text" id="setsDetail" class="form-control" placeholder="ex: 25-21, 23-25, 25-18">
+        </div>
+
+        <div class="form-group" style="background: #fef3c7; padding: 1rem; border-radius: 8px; border: 1px solid #fde68a;">
+          <label class="form-label" style="color: #92400e;">⭐ Élection de l'Homme du Match (MVP) :</label>
+          <select id="scoreMvpSelect" class="form-control"></select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalScore')">Annuler</button>
+          <button type="submit" class="btn btn-primary">Valider le Score</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Event (Stats detaillees) -->
+  <div class="modal-overlay" id="modalEvent">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Statistiques du Match</h3>
+          <div id="eventMatchTitle" style="font-size: 0.85rem; color: var(--text-muted);">Match</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalEvent')">&times;</button>
+      </div>
+      <form id="formEvent" style="margin-bottom: 1.5rem;">
+        <input type="hidden" id="eventMatchId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Joueur :</label>
+            <select id="eventPlayerSelect" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Action / Statistique :</label>
+            <select id="eventTypeSelect" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre / Valeur :</label>
+          <input type="number" id="eventCount" class="form-control" value="1" min="1" required>
+        </div>
+        <button type="submit" class="btn btn-basket" style="width: 100%;">➕ Enregistrer la Statistique</button>
+      </form>
+
+      <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Événements enregistrés sur ce match :</h4>
+        <ul id="matchEventsList" style="list-style: none; max-height: 200px; overflow-y: auto;"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Award -->
+  <div class="modal-overlay" id="modalAward">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">🌟 Nommer le Joueur de la Semaine</h3>
+        <button class="modal-close" onclick="closeModal('modalAward')">&times;</button>
+      </div>
+      <form id="formAward">
+        <div class="form-group">
+          <label class="form-label">Semaine / Période :</label>
+          <input type="text" id="awardWeek" class="form-control" value="Semaine 1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Joueur récompensé :</label>
+          <select id="awardPlayerSelect" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Titre de la distinction :</label>
+          <input type="text" id="awardTitle" class="form-control" value="MVP de la Semaine" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Commentaire / Faits d'armes :</label>
+          <textarea id="awardDesc" class="form-control" rows="3" placeholder="ex: 28 points marqués, 4 paniers primés et un leadership exceptionnel lors du derby..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalAward')">Annuler</button>
+          <button type="submit" class="btn btn-basket">Publier la Distinction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Highlight -->
+  <div class="modal-overlay" id="modalHighlight">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">⚡ Publier une Belle Action / Highlight</h3>
+        <button class="modal-close" onclick="closeModal('modalHighlight')">&times;</button>
+      </div>
+      <form id="formHighlight">
+        <div class="form-group">
+          <label class="form-label">Titre percutant de l'action :</label>
+          <input type="text" id="hlTitle" class="form-control" placeholder="ex: Dunk surpuissant au 4e quart-temps !" required>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Type d'action :</label>
+            <select id="hlActionType" class="form-control" required>
+              <option value="dunk">🏀 Dunk / Smash fracassant</option>
+              <option value="three_pointer">🎯 Tir primé à 3-points</option>
+              <option value="goal">⚽ But d'anthologie / Lucarne</option>
+              <option value="save">🧤 Arrêt décisif du gardien</option>
+              <option value="assist">👟 Passe lumineuse / Caviar</option>
+              <option value="skill">🤾 Geste technique / Dribble</option>
+              <option value="celebration">🎉 Célébration spectaculaire</option>
+              <option value="action">🔥 Autre moment fort</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Joueur auteur de l'action :</label>
+            <select id="hlPlayerSelect" class="form-control">
+              <option value="">-- Aucun joueur spécifique --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Rencontre associée :</label>
+          <select id="hlMatchSelect" class="form-control">
+            <option value="">-- Non rattaché à un match précis --</option>
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Type de Média :</label>
+            <select id="hlMediaType" class="form-control" onchange="toggleHighlightMediaInputs()">
+              <option value="photo">📷 Photo de l'action</option>
+              <option value="video">🎥 Vidéo (Fichier MP4/WebM)</option>
+              <option value="embed">🔗 Lien Vidéo Externe (YouTube / TikTok / Web)</option>
+            </select>
+          </div>
+          <div class="form-group" id="groupHlFile">
+            <label class="form-label">Fichier Photo ou Vidéo :</label>
+            <input type="file" id="hlFileInput" class="form-control" accept="image/*,video/mp4,video/webm">
+          </div>
+        </div>
+
+        <div class="form-group" id="groupHlUrl" style="display: none;">
+          <label class="form-label">Lien direct ou vidéo YouTube / Web :</label>
+          <input type="url" id="hlMediaUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=... ou https://...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description ou commentaire de l'action :</label>
+          <textarea id="hlDescription" class="form-control" rows="2" placeholder="Décrivez le contexte de cette belle action..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalHighlight')">Annuler</button>
+          <button type="submit" class="btn btn-primary">⚡ Mettre en Ligne l'Action</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

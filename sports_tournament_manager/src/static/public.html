@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournois Sportifs — Direct & Classements</title>
+  <link rel="stylesheet" href="/css/public.css">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="public-header">
+    <div class="public-header-inner">
+      <div>
+        <div class="school-tag">Institut Universitaire Saint Jérôme</div>
+        <h1 class="public-title" id="pTournamentTitle">Tournoi Sportif</h1>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <select id="pSelectTournament" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border-dark); padding: 0.4rem 0.75rem; border-radius: 8px; font-weight: 700; outline: none;">
+          <!-- Populated dynamically -->
+        </select>
+        <button class="share-action-btn" id="btnShareLink">
+          🔗 Partager
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="public-nav">
+    <div class="public-nav-container">
+      <button class="p-tab-btn active" data-tab="tab-p-standings">
+        🏆 Classement
+      </button>
+      <button class="p-tab-btn" data-tab="tab-p-matches">
+        📅 Matchs & Résultats
+      </button>
+      <button class="p-tab-btn" data-tab="tab-p-stats">
+        🎯 Meilleurs Joueurs & MVPs
+      </button>
+      <button class="p-tab-btn" data-tab="tab-p-awards">
+        🌟 Joueur de la Semaine
+      </button>
+      <button class="p-tab-btn" data-tab="tab-p-highlights">
+        ⚡ Belles Actions & Vidéos
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="public-container">
+
+    <!-- TAB 1: CLASSEMENT -->
+    <section id="tab-p-standings" class="p-pane active">
+      <div class="standings-card">
+        <div class="table-header-title">
+          <span>Classement Général</span>
+          <span id="pSportBadge" style="font-size: 0.8rem; background: rgba(245, 158, 11, 0.2); color: var(--accent); padding: 0.2rem 0.6rem; border-radius: 9999px;">
+            Discipline
+          </span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="p-table">
+            <thead id="pTableHeadStandings"></thead>
+            <tbody id="pTableBodyStandings"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MATCHS -->
+    <section id="tab-p-matches" class="p-pane">
+      <div class="p-matches-list" id="pMatchesList">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 3: STATS & BUTEURS -->
+    <section id="tab-p-stats" class="p-pane">
+      
+      <!-- Scorers & MVPs Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+        
+        <div class="standings-card">
+          <div class="table-header-title">🎯 Top Marqueurs / Buteurs</div>
+          <table class="p-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th class="th-left">Joueur</th>
+                <th>Équipe</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="pTableScorers"></tbody>
+          </table>
+        </div>
+
+        <div class="standings-card">
+          <div class="table-header-title">⭐ Hommes du Match (MVP)</div>
+          <table class="p-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th class="th-left">Joueur</th>
+                <th>Trophées</th>
+              </tr>
+            </thead>
+            <tbody id="pTableMvps"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Basketball Extra Stats (Points, 3pts, Assists, Rebounds) -->
+      <div id="pBasketExtraContainer" style="display: none;">
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">
+          🏀 Statistiques Détaillées Basketball
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          
+          <div class="standings-card">
+            <div class="table-header-title" style="font-size: 0.95rem; color: #ea580c;">Tirs à 3-Points</div>
+            <table class="p-table">
+              <thead><tr><th>#</th><th class="th-left">Joueur</th><th>Paniers</th></tr></thead>
+              <tbody id="pTable3pts"></tbody>
+            </table>
+          </div>
+
+          <div class="standings-card">
+            <div class="table-header-title" style="font-size: 0.95rem; color: #38bdf8;">Passes Décisives (Assists)</div>
+            <table class="p-table">
+              <thead><tr><th>#</th><th class="th-left">Joueur</th><th>Passes</th></tr></thead>
+              <tbody id="pTableAssists"></tbody>
+            </table>
+          </div>
+
+          <div class="standings-card">
+            <div class="table-header-title" style="font-size: 0.95rem; color: #22c55e;">Rebonds</div>
+            <table class="p-table">
+              <thead><tr><th>#</th><th class="th-left">Joueur</th><th>Rebonds</th></tr></thead>
+              <tbody id="pTableRebounds"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 4: AWARDS -->
+    <section id="tab-p-awards" class="p-pane">
+      <div id="pAwardsList">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 5: HIGHLIGHTS & BELLES ACTIONS -->
+    <section id="tab-p-highlights" class="p-pane">
+      <div class="p-highlights-header" style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; color: #fff;">
+          <span>⚡</span> Moments Forts & Belles Actions
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+          Photos, vidéos et actions d'anthologie ! Réagissez avec vos 🔥 et donnez votre avis en commentaire.
+        </p>
+      </div>
+      <div class="p-highlights-feed" id="pHighlightsFeed">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border-dark); margin-top: 2rem;">
+    Institut Universitaire Saint Jérôme de Douala — Tournois Sportifs Officiels
+  </footer>
+
+  <script src="/js/public.js"></script>
+</body>
+</html>

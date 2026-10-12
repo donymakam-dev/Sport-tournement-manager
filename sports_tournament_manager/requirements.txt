@@ -1,0 +1,3 @@
+# Sports Tournament Manager - Institut Universitaire Saint Jerome
+# Utilise la bibliotheque standard Python (http.server, sqlite3, json, urllib).
+# Aucune dependance pip externe requise.
